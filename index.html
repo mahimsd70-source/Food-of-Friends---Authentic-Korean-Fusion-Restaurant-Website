@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOOD OF FRIENDS - Complete System</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}:root{--black:#0a0a0a;--dark:#141414;--gold:#FFC300;--orange:#FF6B00;--white:#fff}
+body{background:var(--black);color:#fff;font-family:'Inter',sans-serif}
+.bebas{font-family:'Bebas Neue',sans-serif}
+nav{position:fixed;top:0;width:100%;z-index:100;padding:16px 4%;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,10,0.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08)}
+.logo{font-size:24px;letter-spacing:1px}.logo span{color:var(--gold)}
+.nav{display:flex;gap:20px;list-style:none}.nav a{color:#888;text-decoration:none;font-size:12px;letter-spacing:1.5px}
+.cart{background:var(--gold);color:#000;padding:9px 18px;border-radius:100px;font-weight:800;border:none;cursor:pointer}
+.hero{padding:130px 5% 60px;background:radial-gradient(ellipse at 20% 50%, rgba(255,107,0,0.22), transparent 60%), var(--black)}
+.hero h1{font-size:clamp(50px,8vw,96px);line-height:0.9}.expose{background:linear-gradient(100deg,var(--gold),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tabs{display:flex;gap:10px;margin:30px 0;flex-wrap:wrap}.tab{border:1px solid rgba(255,255,255,0.15);background:transparent;color:#888;padding:10px 20px;border-radius:100px;cursor:pointer;font-size:12px;letter-spacing:1px}.tab.active{background:#fff;color:#000}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.card{background:#1a1a1a;border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden}
+.card img{width:100%;height:190px;object-fit:cover}
+.card-body{padding:16px}.price{color:var(--gold);font-weight:800;font-size:20px}
+.add{background:#fff;color:#000;border:none;padding:7px 14px;border-radius:100px;font-weight:700;cursor:pointer;float:right}
+section{padding:70px 5%;border-top:1px solid rgba(255,255,255,0.06)}
+.two{display:grid;grid-template-columns:1.1fr 0.9fr;gap:0;border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;background:var(--dark)}
+.left{padding:30px;border-right:1px solid rgba(255,255,255,0.08)}.right{padding:30px;background:#141414}
+input,select,textarea{width:100%;background:#1e1e1e;border:1px solid rgba(255,255,255,0.1);color:#fff;padding:12px;border-radius:10px;margin-bottom:10px;outline:none}
+.pay{background:linear-gradient(100deg,var(--gold),var(--orange));color:#000;border:none;padding:16px;border-radius:12px;font-weight:900;width:100%;cursor:pointer;margin-top:10px}
+.pm{display:inline-block;padding:8px 14px;background:#1e1e1e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;margin-right:8px;cursor:pointer;font-size:12px}.pm.active{border-color:var(--gold);background:rgba(255,195,0,0.15)}
+.qr-box{background:#111;padding:20px;border-radius:16px;border:1px solid rgba(255,255,255,0.08);text-align:center}
+#qrcode{display:flex;justify-content:center;margin:16px 0}
+.admin-login{max-width:400px;margin:40px auto;background:#141414;padding:30px;border-radius:20px;border:1px solid rgba(255,255,255,0.08)}
+.admin-panel{display:none}
+.admin-table{width:100%;border-collapse:collapse;margin-top:15px}.admin-table th,.admin-table td{border:1px solid rgba(255,255,255,0.08);padding:8px;font-size:13px;text-align:left}.admin-table th{background:#1e1e1e;color:var(--gold)}
+.edit-price{width:80px;background:#1e1e1e;border:1px solid #333;color:#fff;padding:4px;border-radius:6px}
+@media(max-width:800px){.two{grid-template-columns:1fr}.nav{display:none}}
+</style>
+</head>
+<body>
+<nav>
+<div class="logo bebas">FOOD OF <span>FRIENDS</span></div>
+<ul class="nav bebas"><li><a href="#menu">MENU</a></li><li><a href="#booking">BOOK TABLE</a></li><li><a href="#qr">QR MENU</a></li><li><a href="#order">ORDER</a></li><li><a href="#admin">ADMIN</a></li></ul>
+<button class="cart" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">🛒 <span id="cart-count">0</span></button>
+</nav>
+
+<div class="hero">
+<h1 class="bebas">FOOD OF <span class="expose">FRIENDS</span></h1>
+<p style="color:#888;margin:15px 0;max-width:500px">Indian • Chinese • Korean on Black + Exposed Gold. Dine-in QR, Table Booking, Live Admin.</p>
+<div class="tabs bebas"><button class="tab active" onclick="filterCat('all',this)">ALL</button><button class="tab" onclick="filterCat('indian',this)">INDIAN</button><button class="tab" onclick="filterCat('chinese',this)">CHINESE</button><button class="tab" onclick="filterCat('korean',this)">KOREAN</button></div>
+<div class="grid" id="menu-grid"></div>
+</div>
+
+<section id="booking">
+<h2 class="bebas" style="font-size:44px">TABLE <span class="expose">BOOKING</span></h2>
+<div class="two" style="margin-top:20px">
+<div class="left">
+<input id="b-name" placeholder="Name *"><input id="b-phone" placeholder="Phone *">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><input id="b-date" type="date"><input id="b-time" type="time"></div>
+<select id="b-guests"><option>2 Guests</option><option>3 Guests</option><option>4 Guests</option><option>6 Guests</option><option>8+ Guests</option></select>
+<select id="b-table"><option>Table - Any</option><option>Table 1 - Window</option><option>Table 2 - Family</option><option>Table 3 - Couple</option><option>Table 4 - Outdoor</option><option>Table 5 - Private</option></select>
+<textarea id="b-note" placeholder="Special request"></textarea>
+<button class="pay bebas" onclick="bookTable()">BOOK TABLE → WHATSAPP</button>
+</div>
+<div class="right">
+<h3 class="bebas" style="font-size:22px;margin-bottom:12px">TODAY'S BOOKINGS</h3>
+<div id="booking-list" style="color:#777;font-size:13px">No bookings yet.</div>
+</div>
+</div>
+</section>
+
+<section id="qr">
+<h2 class="bebas" style="font-size:44px">QR MENU • <span class="expose">DINE-IN</span></h2>
+<div class="two" style="margin-top:20px">
+<div class="left">
+<p style="color:#777;margin-bottom:16px">Generate QR for each table. Customer scans → Order goes to kitchen via WhatsApp.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><select id="qr-table"><option>Table 1</option><option>Table 2</option><option>Table 3</option><option>Table 4</option><option>Table 5</option></select><button class="pay bebas" style="margin:0" onclick="generateQR()">GENERATE QR</button></div>
+<input id="qr-url" placeholder="Your website URL" style="margin-top:12px" value="">
+<button class="pay bebas" style="background:#fff" onclick="printQR()">🖨️ PRINT QR</button>
+</div>
+<div class="right qr-box">
+<div class="bebas">SCAN TO ORDER</div>
+<div id="qrcode"></div>
+<div id="qr-label" class="bebas" style="font-size:20px">Table 1</div>
+</div>
+</div>
+</section>
+
+<section id="order">
+<h2 class="bebas" style="font-size:44px">ORDER + <span class="expose">PAYMENT</span></h2>
+<div class="two" style="margin-top:20px">
+<div class="left"><div id="cart-items"><p style="color:#555;text-align:center;padding:30px">Cart empty</p></div></div>
+<div class="right">
+<input id="c-name" placeholder="Name *"><input id="c-phone" placeholder="Phone *"><input id="c-table" placeholder="Table No or Address">
+<div style="margin:12px 0"><span class="pm active" onclick="setPay(this,'UPI')">UPI</span><span class="pm" onclick="setPay(this,'COD')">COD</span><span class="pm" onclick="setPay(this,'CARD')">CARD</span></div>
+<div style="display:flex;justify-content:space-between;color:#888;margin:8px 0"><span>Subtotal</span><span id="sub">₹0</span></div>
+<div style="display:flex;justify-content:space-between;color:#fff;font-weight:800;font-size:20px;border-top:1px solid #333;padding-top:10px"><span>Total</span><span id="grand">₹0</span></div>
+<button class="pay bebas" onclick="placeOrder()">PAY & ORDER → WHATSAPP</button>
+</div>
+</div>
+</section>
+
+<section id="admin">
+<h2 class="bebas" style="font-size:44px">ADMIN • <span class="expose">PRICE EDITOR</span></h2>
+<div id="admin-login" class="admin-login">
+<h3 class="bebas">Admin Login</h3>
+<p style="color:#666;font-size:12px;margin:8px 0">Default: admin / 1234</p>
+<input id="a-user" placeholder="Username" value="admin"><input id="a-pass" type="password" placeholder="Password" value="1234">
+<button class="pay bebas" onclick="adminLogin()">LOGIN →</button>
+</div>
+<div id="admin-panel" class="admin-panel">
+<h3 class="bebas">Edit Prices Live</h3>
+<table class="admin-table"><thead><tr><th>Dish</th><th>Cat</th><th>Price</th><th>New</th><th>Action</th></tr></thead><tbody id="admin-body"></tbody></table>
+<div id="admin-bookings" style="margin-top:20px;font-size:12px;color:#888"></div>
+</div>
+</section>
+
+<script>
+let WHATSAPP='919876543210';let UPI='foodoffriends@okicici';let SHOP='FOOD OF FRIENDS';
+let dishes=JSON.parse(localStorage.getItem('fof_dishes'))||[
+{id:1,cat:'indian',name:'Dum Biryani',price:349,img:'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500'},
+{id:2,cat:'indian',name:'Butter Chicken Naan',price:399,img:'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=500'},
+{id:3,cat:'chinese',name:'Chilli Chicken',price:299,img:'https://images.unsplash.com/photo-1525755662778-989d5db1a623?w=500'},
+{id:4,cat:'chinese',name:'Hakka Noodles',price:249,img:'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500'},
+{id:5,cat:'korean',name:'Bulgogi Bibimbap',price:449,img:'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=500'},
+{id:6,cat:'korean',name:'Kimchi Jjigae',price:379,img:'https://images.unsplash.com/photo-1583223667854-e0e05b1ad4f1?w=500'},
+{id:7,cat:'indian',name:'Ghee Dosa Tower',price:229,img:'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=500'},
+{id:8,cat:'korean',name:'K-Fried Chicken',price:359,img:'https://images.unsplash.com/photo-1562967914-608f82629710?w=500'}
+];
+let cart=[],pay='UPI';let bookings=JSON.parse(localStorage.getItem('fof_bookings')||'[]');
+function saveDishes(){localStorage.setItem('fof_dishes',JSON.stringify(dishes))}
+function render(list){document.getElementById('menu-grid').innerHTML=list.map(d=>`<div class="card"><img src="${d.img}"><div class="card-body"><div style="font-weight:700">${d.name}</div><div style="color:#666;font-size:12px;text-transform:uppercase">${d.cat}</div><div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center"><div class="price">₹${d.price}</div><button class="add" onclick="addCart(${d.id})">+ Add</button></div></div></div>`).join('')}
+function filterCat(c,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');render(c==='all'?dishes:dishes.filter(x=>x.cat===c))}
+function addCart(id){let d=dishes.find(x=>x.id===id);let e=cart.find(x=>x.id===id);if(e)e.qty++;else cart.push({...d,qty:1});updCart()}
+function updCart(){document.getElementById('cart-count').textContent=cart.reduce((s,c)=>s+c.qty,0);let sub=cart.reduce((s,c)=>s+c.price*c.qty,0);document.getElementById('sub').textContent='₹'+sub;document.getElementById('grand').textContent='₹'+(sub?sub+49:0);if(cart.length===0){document.getElementById('cart-items').innerHTML='<p style="color:#555;text-align:center;padding:30px">Cart empty</p>';return}document.getElementById('cart-items').innerHTML=cart.map(c=>`<div style="display:flex;gap:12px;background:#111;padding:12px;border-radius:10px;margin-bottom:8px;align-items:center"><img src="${c.img}" style="width:50px;height:50px;border-radius:8px;object-fit:cover"><div><div style="font-weight:700;font-size:14px">${c.name}</div><div style="color:#777;font-size:12px">₹${c.price} x ${c.qty}</div></div><div style="margin-left:auto;display:flex;gap:8px"><button onclick="chg(${c.id},-1)" style="width:26px;height:26px;border-radius:50%;background:transparent;border:1px solid #444;color:#fff">-</button><span>${c.qty}</span><button onclick="chg(${c.id},1)" style="width:26px;height:26px;border-radius:50%;background:transparent;border:1px solid #444;color:#fff">+</button></div></div>`).join('')}
+function chg(id,d){let it=cart.find(c=>c.id===id);it.qty+=d;if(it.qty<=0)cart=cart.filter(c=>c.id!==id);updCart()}
+function setPay(el,m){document.querySelectorAll('.pm').forEach(p=>p.classList.remove('active'));el.classList.add('active');pay=m}
+function placeOrder(){if(!cart.length)return alert('Add items');let name=document.getElementById('c-name').value,phone=document.getElementById('c-phone').value,table=document.getElementById('c-table').value;if(!name||!phone)return alert('Name phone needed');let sub=cart.reduce((s,c)=>s+c.price*c.qty,0),total=sub+49,items=cart.map(c=>`${c.qty}x ${c.name}`).join('%0A');let msg=`🔥 NEW ORDER ${SHOP}%0A👤 ${name} ${phone}%0A📍 ${table||'Delivery'}%0A🍽️ ${items}%0A💰 ₹${total} ${pay}`;if(pay==='UPI'){location.href=`upi://pay?pa=${UPI}&pn=${SHOP}&am=${total}&cu=INR`;setTimeout(()=>{window.open(`https://wa.me/${WHATSAPP}?text=${msg}✅ UPI`,'_blank');cart=[];updCart()},1200)}else{window.open(`https://wa.me/${WHATSAPP}?text=${msg}`,'_blank');cart=[];updCart()}}
+function bookTable(){let n=document.getElementById('b-name').value,p=document.getElementById('b-phone').value,d=document.getElementById('b-date').value,t=document.getElementById('b-time').value,g=document.getElementById('b-guests').value,tb=document.getElementById('b-table').value,note=document.getElementById('b-note').value;if(!n||!p||!d||!t)return alert('Fill all');let bk={n,p,d,t,g,tb,note,time:new Date().toLocaleString()};bookings.push(bk);localStorage.setItem('fof_bookings',JSON.stringify(bookings));renderBookings();let msg=`📅 TABLE BOOKING ${SHOP}%0A👤 ${n} ${p}%0A📆 ${d} ${t} ${g}%0A🪑 ${tb}%0A📝 ${note}`;window.open(`https://wa.me/${WHATSAPP}?text=${msg}`,'_blank');alert('Booking sent!')}
+function renderBookings(){if(!bookings.length){document.getElementById('booking-list').innerHTML='No bookings yet';return}document.getElementById('booking-list').innerHTML=bookings.slice(-5).reverse().map(b=>`<div style="background:#111;padding:10px;border-radius:8px;margin-bottom:6px"><div style="font-weight:700">${b.n} - ${b.tb}</div><div>${b.d} ${b.t} ${b.g}</div></div>`).join('')}
+function generateQR(){let table=document.getElementById('qr-table').value;let base=document.getElementById('qr-url').value||window.location.href;let url=base+`?table=${encodeURIComponent(table)}&dinein=1`;document.getElementById('qr-label').textContent=table;document.getElementById('qrcode').innerHTML='';new QRCode(document.getElementById('qrcode'),{text:url,width:180,height:180})}
+function printQR(){let w=window.open('','','width=400,height=500');w.document.write(`<div style="text-align:center"><h2>${SHOP}</h2><div>${document.getElementById('qrcode').innerHTML}</div><h3>${document.getElementById('qr-label').textContent}</h3><p>Scan to order</p></div>`);w.print()}
+function adminLogin(){if(document.getElementById('a-user').value==='admin'&&document.getElementById('a-pass').value==='1234'){document.getElementById('admin-login').style.display='none';document.getElementById('admin-panel').style.display='block';renderAdmin()}else alert('Wrong')}
+function renderAdmin(){document.getElementById('admin-body').innerHTML=dishes.map(d=>`<tr><td>${d.name}</td><td>${d.cat}</td><td>₹${d.price}</td><td><input class="edit-price" id="p-${d.id}" value="${d.price}"></td><td><button onclick="updatePrice(${d.id})" style="background:var(--gold);border:none;padding:5px 12px;border-radius:6px;font-weight:700;cursor:pointer">Update</button></td></tr>`).join('');document.getElementById('admin-bookings').innerHTML=bookings.map(b=>`${b.time} - ${b.n} ${b.d} ${b.t} ${b.tb}<br>`).join('')}
+function updatePrice(id){let v=parseInt(document.getElementById('p-'+id).value);dishes.find(d=>d.id===id).price=v;saveDishes();render(dishes);renderAdmin();alert('Updated!')}
+render(dishes);renderBookings();generateQR();
+let params=new URLSearchParams(window.location.search);if(params.get('table')){document.getElementById('c-table').value=params.get('table');}
+</script>
+</body>
+</html>
